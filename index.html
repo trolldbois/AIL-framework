@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Ail-framework : AIL framework - Analysis Information Leak framework">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Ail-framework</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/CIRCL/AIL-framework">View on GitHub</a>
+
+          <h1 id="project_title">Ail-framework</h1>
+          <h2 id="project_tagline">AIL framework - Analysis Information Leak framework</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/CIRCL/AIL-framework/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/CIRCL/AIL-framework/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="ail" class="anchor" href="#ail"><span class="octicon octicon-link"></span></a>AIL</h1>
+
+<p>AIL framework - Analysis Information Leak framework</p>
+
+<p>AIL is a modular framework to analyse potential information leak from unstructured data source like pastes from Pastebin or similar services. AIL framework is flexible and can be extended to support other functionalities to mine sensitive information.</p>
+
+<p><img src="./doc/screenshots/DashboardAIL.png?raw=true" alt="Dashboard" title="AIL framework dashboard"><img src="./doc/screenshots/WordtrendingAIL.png?raw=true" alt="Trending" title="AIL framework wordtrending"></p>
+
+<h2>
+<a name="requirements--installation" class="anchor" href="#requirements--installation"><span class="octicon octicon-link"></span></a>Requirements &amp; Installation</h2>
+
+<p>Obviously:
+<code>sudo apt-get install python2.7</code></p>
+
+<p>But also pip, virtualenv and screen.</p>
+
+<pre><code>sudo apt-get install python-pip
+sudo pip install virtualenv
+sudo apt-get install screen
+</code></pre>
+
+<p>You need to create a variable AILENV that will be the installation path:</p>
+
+<p><code>export AILENV="/home/user/ail"</code></p>
+
+<p>Then create a Python virtual environment:</p>
+
+<p><code>virtualenv AILENV</code></p>
+
+<p>And install these few more packets:</p>
+
+<pre><code>sudo apt-get install g++
+sudo apt-get install python-dev
+sudo apt-get install python-tk
+sudo apt-get install screen
+</code></pre>
+
+<p>Then these modules need to be install with pip inside the virtual environment:
+(Activating virtualenv)</p>
+
+<pre><code>. ./AILENV/bin/activate
+</code></pre>
+
+<p>You'll need to clone langid:
+[<a href="https://github.com/saffsd/langid.py">https://github.com/saffsd/langid.py</a>] 
+And install it: </p>
+
+<pre><code>python setup.py install
+</code></pre>
+
+<p>That's all the packages you can install with pip:</p>
+
+<pre><code>pip install redis
+pip install networkx
+pip install crcmod
+pip install mmh3
+pip install dnspython
+pip install pyzmq
+pip install texttable ----- Queues Monitoring (Optional)
+pip install -U textblob
+python -m textblob.download_corpora
+pip install python-magic
+pip install numpy
+pip install flask ----- (Optional)
+pip install nltk
+pip install matplotlib ----- (sudo ln -s freetype2/ft2build.h in /usr/include/)
+pip install pybloomfiltermmap ----- (you may need to sudo apt-get install libssl-dev)
+</code></pre>
+
+<h2>
+<a name="installing-redis--level-db" class="anchor" href="#installing-redis--level-db"><span class="octicon octicon-link"></span></a>Installing Redis &amp; Level DB</h2>
+
+<p>Assuming that you install everything under /opt/ with adequate permissions:</p>
+
+<pre><code>wget http://download.redis.io/releases/redis-2.8.12.tar.gz
+tar -xvf redis-2.8.12.tar.gz -C /opt/
+</code></pre>
+
+<p>And follow the README after extraction.</p>
+
+<p>When redis is properly installed you can edit your own config files for
+the different required databases or just take the config from the project
+located under <code>/config/</code></p>
+
+<pre><code>git clone https://github.com/KDr2/redis-leveldb.git
+</code></pre>
+
+<p>Follow the redis-leveldb README.</p>
+
+<p>Then create these directories</p>
+
+<pre><code>cd $AILENV
+    mkdir PASTES
+    mkdir Blooms
+    mkdir dumps
+
+mkdir LEVEL_DB_DATA
+cd LEVEL_DB_DATA/
+    mkdir 2014
+    mkdir 2013
+</code></pre>
+
+<h2>
+<a name="starting-ail" class="anchor" href="#starting-ail"><span class="octicon octicon-link"></span></a>Starting AIL</h2>
+
+<p>If you installed all the requirements described above, you should be able to start AIL framework:</p>
+
+<pre><code>cd $AILENV
+cd bin
+./LAUNCH.sh
+</code></pre>
+
+<p>Then you can browse the status of the AIL framework at the following URL:</p>
+
+<pre><code>    ``http://localhost:7000/``
+</code></pre>
+
+<h2>
+<a name="create-a-new-module" class="anchor" href="#create-a-new-module"><span class="octicon octicon-link"></span></a>Create a new module</h2>
+
+<p>Assuming you already download the project and configure everything:</p>
+
+<ul>
+<li>Redis databases [<a href="http://redis.io/">http://redis.io/</a>]</li>
+<li>Redis Level DB [<a href="https://github.com/KDr2/redis-leveldb">https://github.com/KDr2/redis-leveldb</a>]</li>
+</ul><p>This module will be recover from a stream all the Tor .onion addresses:
+"<a href="http://3g2upl4pq6kufc4m.onion/">http://3g2upl4pq6kufc4m.onion/</a>" Which look like this.</p>
+
+<p>Basically we want to match all paste in with <code>.onion</code> addresses inside.</p>
+
+<p>For that you can already use the module <code>ZMQ_PubSub_Categ</code> and just
+create your own category file in: <code>/file/</code> here it will be <code>/file/onion_categ</code>.</p>
+
+<p>You need also to link this file inside another file (list_categ_files).</p>
+
+<p>Inside the file "onion_categ", you will add the word "onion" (don't forget the carriage return).</p>
+
+<p>Once it's done, at the launch of the AIL framework, every paste with the word onion inside them
+will be forwarded on a specific channel (onion_categ).</p>
+
+<p>Then what you want to do it's recovering these pastes to extract these .onion addresses.</p>
+
+<p>To do that, you'll need to create 2 scripts:
+    <code>ZMQ_Sub_Onion_Q.py</code> (Redis bufferizing)
+    <code>ZMQ_Sub_Onion.py</code> (The extraction)</p>
+
+<p>Those two files are there as an example.</p>
+
+<h2>
+<a name="overview" class="anchor" href="#overview"><span class="octicon octicon-link"></span></a>Overview</h2>
+
+<p>Here is a "chained tree" to show how all ZMQ Modules are linked and how the informations 
+(mainly the paste) is going through them.</p>
+
+<p>The onion module is interfaced at top down level of this tree (like the ZMQ_Sub_Urls module).</p>
+
+<p>All modules that you want to create using the "tokenization method" and the "categories system" need to be created at this level.</p>
+
+<p>If you want to create a general module (e.g. using all pastes), this module need to be created at the same level than ZMQ_Sub_Duplicate.</p>
+
+<p><img src="./doc/dia/ZMQ_Queuing_Tree.jpg?raw=true" alt="ZMQTree" title="ZMQ Tree"></p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>LICENSE</h2>
+
+<pre><code>    Copyright (C) 2014 Jules Debra
+    Copyright (C) 2014 CIRCL - Computer Incident Response Center Luxembourg (℅ smile gie)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
+</code></pre>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Ail-framework maintained by <a href="https://github.com/CIRCL">CIRCL</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>

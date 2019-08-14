@@ -1,3 +1,4 @@
+# (from ail root path) docker-compose -f other_installers/docker/docker-compose.yml --project-directory . build
 version: '3'
 services:
   ardb:
@@ -28,7 +29,9 @@ services:
       - ./bin/packages/config.cfg:/opt/AIL/bin/packages/config.cfg:ro
     working_dir: /opt/AIL/bin
   flask:
-    build: .
+    build:
+       context: .
+       dockerfile: ./other_installers/docker/Dockerfile
     entrypoint:
       - /opt/AIL/var/www/Flask_server.py
     ports:

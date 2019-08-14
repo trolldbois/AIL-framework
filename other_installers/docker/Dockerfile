@@ -36,9 +36,9 @@ ENV AIL_VENV ${AIL_HOME}/AILENV
 
 ENV PATH ${AIL_VENV}/bin:${AIL_HOME}:${AIL_REDIS}:${AIL_ARDB}:${AIL_BIN}:${AIL_FLASK}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
-RUN ./pystemon/install.sh
+RUN ./other_installers/docker/pystemon/install.sh
 RUN pip install -r /opt/pystemon/requirements.txt
 RUN pip install -r /opt/AIL/crawler_requirements.txt
 
-COPY docker_start.sh /docker_start.sh
+COPY ./other_installers/docker/docker_start.sh /docker_start.sh
 ENTRYPOINT ["/bin/bash", "docker_start.sh"]
